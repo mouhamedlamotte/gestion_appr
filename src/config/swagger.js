@@ -50,6 +50,7 @@ const options = {
             libelle: { type: 'string', example: 'Produit A' },
             prix_unitaire: { type: 'number', example: 100 },
             quantite: { type: 'number', example: 10 },
+            image: { type: 'string', nullable: true, example: 'produits/abc123', description: 'public_id Cloudinary' },
           },
         },
         ProduitInput: {
@@ -59,6 +60,7 @@ const options = {
             libelle: { type: 'string', example: 'Produit A' },
             prix_unitaire: { type: 'number', example: 100 },
             quantite: { type: 'number', example: 10 },
+            image: { type: 'string', format: 'binary', description: 'Image du produit (optionnel)' },
           },
         },
         Approvisionnement: {

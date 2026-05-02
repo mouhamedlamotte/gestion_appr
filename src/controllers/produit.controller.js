@@ -16,14 +16,14 @@ const getById = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const data = await ProduitService.create(req.body);
+    const data = await ProduitService.create(req.body, req.file);
     res.status(201).json({ success: true, message: 'Produit créé avec succès', data });
   } catch (err) { next(err); }
 };
 
 const update = async (req, res, next) => {
   try {
-    const data = await ProduitService.update(Number(req.params.id), req.body);
+    const data = await ProduitService.update(Number(req.params.id), req.body, req.file);
     res.json({ success: true, message: 'Produit mis à jour', data });
   } catch (err) { next(err); }
 };
@@ -32,6 +32,13 @@ const remove = async (req, res, next) => {
   try {
     await ProduitService.remove(Number(req.params.id));
     res.json({ success: true, message: 'Produit supprimé avec succès' });
+  } catch (err) { next(err); }
+};
+
+const getImage = async (req, res, next) => {
+  try {
+    const url = await ProduitService.getImageUrl(Number(req.params.id));
+    res.json({ success: true, data: { url } });
   } catch (err) { next(err); }
 };
 
@@ -49,4 +56,4 @@ const decrement = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getAll, getById, create, update, remove, increment, decrement};
+module.exports = { getAll, getById, create, update, remove, increment, decrement, getImage };

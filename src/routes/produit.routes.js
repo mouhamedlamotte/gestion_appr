@@ -3,6 +3,7 @@ const router = express.Router();
 const ctrl = require('../controllers/produit.controller');
 const validate = require('../middlewares/validate');
 const { produitSchema } = require('../validations/schemas');
+const upload = require('../middlewares/upload');
 
 /**
  * @swagger
@@ -58,16 +59,39 @@ router.get('/:id', ctrl.getById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/ProduitInput'
+ *             type: object
+ *             required: [libelle, prix_unitaire, quantite]
+ *             properties:
+ *               libelle:
+ *                 type: string
+ *                 example: Produit A
+ *               prix_unitaire:
+ *                 type: number
+ *                 example: 100
+ *               quantite:
+ *                 type: number
+ *                 example: 10
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image du produit (optionnel)
  *     responses:
  *       201:
  *         description: Produit créé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Success'
  *       400:
  *         description: Données invalides
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
-router.post('/', validate(produitSchema), ctrl.create);
+router.post('/', upload.single('image'), validate(produitSchema), ctrl.create);
 
 /**
  * @swagger
@@ -83,16 +107,39 @@ router.post('/', validate(produitSchema), ctrl.create);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/ProduitInput'
+ *             type: object
+ *             required: [libelle, prix_unitaire, quantite]
+ *             properties:
+ *               libelle:
+ *                 type: string
+ *                 example: Produit A
+ *               prix_unitaire:
+ *                 type: number
+ *                 example: 100
+ *               quantite:
+ *                 type: number
+ *                 example: 10
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Nouvelle image (remplace l'ancienne si fournie)
  *     responses:
  *       200:
  *         description: Produit mis à jour
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Success'
  *       404:
  *         description: Produit introuvable
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', validate(produitSchema), ctrl.update);
+router.put('/:id', upload.single('image'), validate(produitSchema), ctrl.update);
 
 /**
  * @swagger
@@ -116,7 +163,41 @@ router.put('/:id', validate(produitSchema), ctrl.update);
 router.delete('/:id', ctrl.remove);
 
 
-/** * @swagger
+/**
+ * @swagger
+ * /api/produit/{id}/image:
+ *   get:
+ *     summary: Récupérer l'URL de l'image d'un Produit
+ *     tags: [Produit]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: URL de l'image Cloudinary
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     url: { type: string, example: 'https://res.cloudinary.com/...' }
+ *       404:
+ *         description: Produit introuvable ou sans image
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/:id/image', ctrl.getImage);
+
+/**
+ * @swagger
  * /api/produit/{id}/increment:
  *   post:
  *     summary: Augmenter la quantité d'un Produit

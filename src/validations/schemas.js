@@ -8,8 +8,8 @@ const fournisseurSchema = z.object({
 
 const produitSchema = z.object({
   libelle: z.string().min(1, 'Le nom est requis'),
-  prix_unitaire: z.number().min(1, 'Le prix doit être supérieur à 0'),
-  quantite: z.number().min(1, 'La quantité doit être supérieur à 0'),
+  prix_unitaire: z.coerce.number().min(1, 'Le prix doit être supérieur à 0'),
+  quantite: z.coerce.number().min(1, 'La quantité doit être supérieur à 0'),
 });
 
 const approvSchema = z.object({

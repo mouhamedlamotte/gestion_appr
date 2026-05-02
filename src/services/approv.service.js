@@ -22,7 +22,6 @@ const update = async (id, data) => {
   const approv = await getById(id);
   await FournisseurService.getById(data.fournisseurId);
   const prod = await ProduitService.getById(data.produitId);
-  // Retire l'ancienne quantité et ajoute la nouvelle
   const newQuantite = prod.quantite - approv.quantite + data.quantite;
   await ProduitService.updateQuantite(data.produitId, newQuantite);
   return ApprovRepo.update(id, data);
