@@ -11,34 +11,27 @@ const getById = async (id) => {
 };
 
 const create = async (data) => {
-  const existing = await FournisseurService.getById(data.fournisseurId);
-
-  
-  if (!existing) throw { status: 404, message: 'Fournisseur introuvable' };
+  await FournisseurService.getById(data.fournisseurId);
   const prod = await ProduitService.getById(data.produitId);
-  if (!prod) throw { status: 404, message: 'Produit introuvable' };
   const approv = await ApprovRepo.create(data);
-  const newQuantite = prod.quantite + data.quantite;
-  await ProduitService.updateQuantite(data.produitId, newQuantite);
+  await ProduitService.updateQuantite(data.produitId, prod.quantite + data.quantite);
   return approv;
 };
 
 const update = async (id, data) => {
-  await getById(id);
-  const existing = await FournisseurService.getById(data.fournisseurId);
-  if (!existing) throw { status: 404, message: 'Fournisseur introuvable' };
+  const approv = await getById(id);
+  await FournisseurService.getById(data.fournisseurId);
   const prod = await ProduitService.getById(data.produitId);
-  if (!prod) throw { status: 404, message: 'Produit introuvable' };
-  const previousQuantite = existing.quantite;
-  const productQunatiteToremove = prod - previousQuantite;
-  const prodToDate = await ProduitService.updateQuantite(data.produitId, productQunatiteToremove);
-  const newQuantity = prodToDate.quantite + data.quantite;
-  await ProduitService.updateQuantite(data.produitId, newQuantity);
+  // Retire l'ancienne quantité et ajoute la nouvelle
+  const newQuantite = prod.quantite - approv.quantite + data.quantite;
+  await ProduitService.updateQuantite(data.produitId, newQuantite);
   return ApprovRepo.update(id, data);
 };
 
 const remove = async (id) => {
   const approv = await getById(id);
+  const prod = await ProduitService.getById(approv.produitId);
+  await ProduitService.updateQuantite(approv.produitId, prod.quantite - approv.quantite);
   return ApprovRepo.remove(id);
 };
 

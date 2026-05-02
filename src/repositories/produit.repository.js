@@ -16,7 +16,10 @@ const decrement = (id) => prisma.produit.update({ where: { id }, data: { quantit
 
 const updateQuantite = (id, quantite) => prisma.produit.update({ where: { id }, data: { quantite } });
 
-const haveStock = (id, quantite) => prisma.produit.findUnique({ where: { id } }).quantite >= quantite;
+const haveStock = async (id, quantite) => {
+  const produit = await prisma.produit.findUnique({ where: { id } });
+  return produit ? produit.quantite >= quantite : false;
+};
 
 
 module.exports = { findAll, findById, create, update, remove, increment, decrement, updateQuantite, haveStock };
