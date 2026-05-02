@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Approvisionnement" ALTER COLUMN "date" SET DEFAULT CURRENT_TIMESTAMP;
